@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>無標題文件</title>
+<style>
+*{margin:0; padding:0;}
+body{background:#f1f1f1;}
+.bar_box{width:640px;height:20px; background:#0FF; position:relative; top:0;left:0;}
+.bar_box .bar{width:0; height:20px; background:#F0F;}
+.bar_box .bar_btn{width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:0;left:0; margin-left:-10px; }
+</style>
+
+<script>
+function time2min(s){
+	function toDou(n){
+		return n<10?'0'+n:''+n;
+	}
+	var min = parseInt(s/60);
+	var sec = parseInt(s%60);
+	return toDou(min)+':'+toDou(sec);
+}
+document.addEventListener('DOMContentLoaded',function(){
+	var oBtn = document.getElementById('btn1');
+	var oBtn2 = document.getElementById('btn2');
+	var oBtn3 = document.getElementById('btn3');
+	var oBtn4 = document.getElementById('btn4');
+	var oBarBox = document.querySelector('.bar_box');
+	var oBar = document.querySelector('.bar_box .bar');
+	var oBarBtn = document.querySelector('.bar_box .bar_btn');
+	var oS = document.getElementsByTagName('span')[0];
+	var oV = document.getElementsByTagName('video')[0];
+	oBtn.onclick=function(){
+		oV.play();
+	};
+	oBtn2.onclick=function(){
+		oV.pause();
+	};
+	oBtn3.onclick=function(){
+		//alert(oV.currentTime);
+		oV.pause();
+		oV.currentTime=0;
+	};
+	oV.ontimeupdate=function(){
+		var scale = oV.currentTime/oV.duration;
+		oS.innerHTML=time2min(oV.currentTime)+'/'+time2min(oV.duration);
+		oBar.style.width = oBarBox.offsetWidth*scale+'px';
+		oBarBtn.style.left = oBarBox.offsetWidth*scale+'px';
+	};
+	oBarBtn.onmousedown=function(ev){
+		var disX = ev.pageX-oBarBtn.offsetLeft;
+		document.onmousemove=function(ev){
+			var l = ev.pageX-disX;
+			if(l<0){
+				l=0;
+			}else if(l>oBarBox.offsetWidth){
+				l=oBarBox.offsetWidth;
+			}
+			oBarBtn.style.left = l+'px';
+			oBar.style.width = l+'px';
+			oV.currentTime = oBar.offsetWidth/oBarBox.offsetWidth*oV.duration;
+		};
+		document.onmouseup=function(){
+			document.onmousemove=null;
+			document.onmouseup=null;
+		};
+		return false;
+	};
+	/*
+	webkitSupportsFullscreen
+	webkitDisplayingFullscreen
+	*/
+},false);
+</script>
+</head>
+
+<body>
+<input type="button" value="播放" id="btn1" />
+<input type="button" value="暂停" id="btn2" />
+<input type="button" value="停止" id="btn3" />
+<hr />
+<span>00:00/00:00</span>
+<div class="bar_box">
+	<div class="bar"></div>
+	<div class="bar_btn"></div>
+</div>
+<br />
+<video src="http://images.sohu.com/ytv/SH/Coke/64036020120714021103.mp4">
+	您的浏览器，版本过低。呵呵。
+</video>
+
+</body>
+</html>
